@@ -17,8 +17,11 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
+	pkg_amqp "go-rabbitmq/pkg/amqp"
 	pkg_jaeger "go-rabbitmq/pkg/jaeger"
 	pkg_mongodb "go-rabbitmq/pkg/mongodb"
+
+	amqp_delivery "go-rabbitmq/todo/delivery/amqp"
 	"go-rabbitmq/todo/delivery/handlers"
 	repository "go-rabbitmq/todo/repository"
 	services "go-rabbitmq/todo/services"
@@ -74,7 +77,7 @@ func main() {
 	// Load environment variables
 	err := godotenv.Load()
 	if err != nil {
-		utils.CaptureError(errors.New("Error loading .env file"))
+		utils.CaptureError(errors.New("error loading .env file"))
 	}
 
 	// Init Jaeger Tracing
@@ -88,6 +91,10 @@ func main() {
 	// Init MongoDB
 	_, cancel, client := pkg_mongodb.InitMongoDB()
 	defer cancel()
+
+	// Init AMQP
+	channel, close := pkg_amqp.ConnectAmqp(os.Getenv("AMQP_URL"))
+	defer close()
 
 	router := Routes()
 
@@ -103,13 +110,20 @@ func main() {
 	todoRepo := repository.NewMongoTodoRepository(client)
 
 	// Service
-	todoService := services.NewTodoService(todoRepo)
+	todoService := services.NewTodoService(channel, todoRepo)
 
 	// Handler
 	handlers.NewTodoHTTPHandler(router, todoService)
 
 	// Print
 	PrintAllRoutes(router)
+
+	// AMQP Service
+	todoAmqp := services.NewTodoAMQPService(tp, channel)
+	todoAmqp.Create()
+
+	// AMQP Delivery
+	amqp_delivery.NewTodoAMQPConsumer(tp, channel, todoService)
 
 	logrus.Fatal(http.ListenAndServe(fmt.Sprintf("%s%s", ":", os.Getenv("PORT")), router)) // Note, the port is usually gotten from the environment.
 }

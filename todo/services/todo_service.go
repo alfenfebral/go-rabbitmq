@@ -3,6 +3,8 @@ package services
 import (
 	"go-rabbitmq/todo/models"
 	"go-rabbitmq/todo/repository"
+
+	"github.com/streadway/amqp"
 )
 
 // TodoService represent the todo service
@@ -16,12 +18,14 @@ type TodoService interface {
 
 type todoService struct {
 	todoRepo repository.TodoRepository
+	channel  *amqp.Channel
 }
 
 // NewTodoService will create new an TodoService object representation of TodoService interface
-func NewTodoService(a repository.TodoRepository) TodoService {
+func NewTodoService(channel *amqp.Channel, a repository.TodoRepository) TodoService {
 	return &todoService{
 		todoRepo: a,
+		channel:  channel,
 	}
 }
 
