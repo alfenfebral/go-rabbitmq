@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	models "go-rabbitmq/models"
+	models "go-rabbitmq/todo/models"
 
 	mock "github.com/stretchr/testify/mock"
 )

@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"go-rabbitmq/models"
+	"go-rabbitmq/todo/models"
 	"go-rabbitmq/utils"
 )
 

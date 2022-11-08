@@ -1,8 +1,8 @@
 package services
 
 import (
-	"go-rabbitmq/models"
-	"go-rabbitmq/repository"
+	"go-rabbitmq/todo/models"
+	"go-rabbitmq/todo/repository"
 )
 
 // TodoService represent the todo service

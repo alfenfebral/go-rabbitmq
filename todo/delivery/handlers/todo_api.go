@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"go-rabbitmq/models"
-	"go-rabbitmq/services"
+	"go-rabbitmq/todo/models"
+	"go-rabbitmq/todo/services"
 	"go-rabbitmq/utils"
 	response "go-rabbitmq/utils/response"
 

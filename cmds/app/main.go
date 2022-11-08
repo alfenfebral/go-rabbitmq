@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -15,10 +17,11 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
-	"go-rabbitmq/handlers"
+	pkg_jaeger "go-rabbitmq/pkg/jaeger"
 	pkg_mongodb "go-rabbitmq/pkg/mongodb"
-	repository "go-rabbitmq/repository"
-	services "go-rabbitmq/services"
+	"go-rabbitmq/todo/delivery/handlers"
+	repository "go-rabbitmq/todo/repository"
+	services "go-rabbitmq/todo/services"
 	"go-rabbitmq/utils"
 	response "go-rabbitmq/utils/response"
 )
@@ -73,6 +76,14 @@ func main() {
 	if err != nil {
 		utils.CaptureError(errors.New("Error loading .env file"))
 	}
+
+	// Init Jaeger Tracing
+	tp := pkg_jaeger.InitializeTracing()
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
 
 	// Init MongoDB
 	_, cancel, client := pkg_mongodb.InitMongoDB()

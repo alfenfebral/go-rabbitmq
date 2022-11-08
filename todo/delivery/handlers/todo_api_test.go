@@ -8,12 +8,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go-rabbitmq/handlers"
+	"go-rabbitmq/todo/delivery/handlers"
 	"go-rabbitmq/utils"
 
-	mockServices "go-rabbitmq/mocks/services"
+	mockServices "go-rabbitmq/todo/mocks/services"
 
-	"go-rabbitmq/models"
+	"go-rabbitmq/todo/models"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"

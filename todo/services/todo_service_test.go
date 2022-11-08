@@ -2,9 +2,9 @@ package services_test
 
 import (
 	"errors"
-	mockRepositories "go-rabbitmq/mocks/repository"
-	"go-rabbitmq/models"
-	"go-rabbitmq/services"
+	mockRepositories "go-rabbitmq/todo/mocks/repository"
+	"go-rabbitmq/todo/models"
+	"go-rabbitmq/todo/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
