@@ -16,13 +16,13 @@ type TodoAMQPPublisher interface {
 }
 
 type todoAMQPPublisher struct {
-	Tp      *trace.TracerProvider
+	tp      *trace.TracerProvider
 	channel *amqp.Channel
 }
 
 func NewTodoAMQPService(tp *trace.TracerProvider, channel *amqp.Channel) TodoAMQPPublisher {
 	return &todoAMQPPublisher{
-		Tp:      tp,
+		tp:      tp,
 		channel: channel,
 	}
 }
@@ -34,7 +34,7 @@ func (publisher *todoAMQPPublisher) Create() {
 	messageName := "todo.create"
 
 	// Create a new span (child of the trace id) to inform the publishing of the message
-	tr := publisher.Tp.Tracer("amqp")
+	tr := publisher.tp.Tracer("amqp")
 	spanName := fmt.Sprintf("AMQP - publish - %s", messageName)
 	ctx, span := tr.Start(ctx, spanName)
 	defer span.End()

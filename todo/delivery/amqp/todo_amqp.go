@@ -18,16 +18,16 @@ type TodoAMQPConsumer interface {
 
 // todoAMQPConsumer represent the amqp
 type todoAMQPConsumer struct {
-	Tp          *trace.TracerProvider
-	TodoService services.TodoService
+	tp          *trace.TracerProvider
+	todoService services.TodoService
 	channel     *amqp.Channel
 }
 
 // NewTodoAMQPConsumer - make amqp consumer
 func NewTodoAMQPConsumer(tp *trace.TracerProvider, channel *amqp.Channel, service services.TodoService) TodoAMQPConsumer {
 	consumer := &todoAMQPConsumer{
-		Tp:          tp,
-		TodoService: service,
+		tp:          tp,
+		todoService: service,
 		channel:     channel,
 	}
 	consumer.Create()
@@ -60,7 +60,7 @@ func (consumer *todoAMQPConsumer) Create() {
 	for d := range msgs {
 		ctx := pkg_amqp.ExtractAMQPHeaders(context.Background(), d.Headers)
 
-		tr := consumer.Tp.Tracer("amqp")
+		tr := consumer.tp.Tracer("amqp")
 		_, span := tr.Start(ctx, "AMQP - consume - todo.create")
 
 		logrus.Printf("Received a message: %s", d.Body)
