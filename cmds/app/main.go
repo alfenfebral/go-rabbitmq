@@ -110,7 +110,7 @@ func main() {
 	todoRepo := repository.NewMongoTodoRepository(client)
 
 	// Service
-	todoService := services.NewTodoService(channel, todoRepo)
+	todoService := services.NewTodoService(todoRepo)
 
 	// Handler
 	todoHandler := handlers.NewTodoHTTPHandler(router, todoService)
