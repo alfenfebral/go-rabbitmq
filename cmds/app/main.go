@@ -22,7 +22,7 @@ import (
 	pkg_mongodb "go-rabbitmq/pkg/mongodb"
 
 	amqp_delivery "go-rabbitmq/todo/delivery/amqp"
-	"go-rabbitmq/todo/delivery/handlers"
+	handlers "go-rabbitmq/todo/delivery/http"
 	repository "go-rabbitmq/todo/repository"
 	services "go-rabbitmq/todo/services"
 	"go-rabbitmq/utils"
