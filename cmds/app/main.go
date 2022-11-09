@@ -113,7 +113,8 @@ func main() {
 	todoService := services.NewTodoService(channel, todoRepo)
 
 	// Handler
-	handlers.NewTodoHTTPHandler(router, todoService)
+	todoHandler := handlers.NewTodoHTTPHandler(router, todoService)
+	todoHandler.RegisterRoutes()
 
 	// Print
 	PrintAllRoutes(router)
