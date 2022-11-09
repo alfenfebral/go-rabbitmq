@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go-rabbitmq/todo/delivery/handlers"
+	handlers "go-rabbitmq/todo/delivery/http"
 	"go-rabbitmq/utils"
 
 	mockServices "go-rabbitmq/todo/mocks/services"
