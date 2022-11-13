@@ -9,7 +9,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
-	"go.opentelemetry.io/otel/sdk/trace"
+	trace_sdk "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type TodoAMQPConsumer interface {
@@ -18,13 +19,13 @@ type TodoAMQPConsumer interface {
 
 // todoAMQPConsumer represent the amqp
 type todoAMQPConsumer struct {
-	tp          *trace.TracerProvider
+	tp          *trace_sdk.TracerProvider
 	todoService services.TodoService
 	channel     *amqp.Channel
 }
 
 // NewTodoAMQPConsumer - make amqp consumer
-func NewTodoAMQPConsumer(tp *trace.TracerProvider, channel *amqp.Channel, service services.TodoService) TodoAMQPConsumer {
+func NewTodoAMQPConsumer(tp *trace_sdk.TracerProvider, channel *amqp.Channel, service services.TodoService) TodoAMQPConsumer {
 	consumer := &todoAMQPConsumer{
 		tp:          tp,
 		todoService: service,
@@ -61,7 +62,10 @@ func (consumer *todoAMQPConsumer) Create() {
 		ctx := pkg_amqp.ExtractAMQPHeaders(context.Background(), d.Headers)
 
 		tr := consumer.tp.Tracer("amqp")
-		_, span := tr.Start(ctx, "AMQP - consume - todo.create")
+		opts := []trace.SpanStartOption{
+			trace.WithSpanKind(trace.SpanKindConsumer),
+		}
+		_, span := tr.Start(ctx, "AMQP - consume - todo.create", opts...)
 
 		logrus.Printf("Received a message: %s", d.Body)
 

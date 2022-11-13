@@ -6,7 +6,8 @@ import (
 	"go-rabbitmq/utils"
 
 	"github.com/streadway/amqp"
-	"go.opentelemetry.io/otel/sdk/trace"
+	trace_sdk "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 
 	pkg_amqp "go-rabbitmq/pkg/amqp"
 )
@@ -16,11 +17,11 @@ type TodoAMQPPublisher interface {
 }
 
 type todoAMQPPublisher struct {
-	tp      *trace.TracerProvider
+	tp      *trace_sdk.TracerProvider
 	channel *amqp.Channel
 }
 
-func NewTodoAMQPService(tp *trace.TracerProvider, channel *amqp.Channel) TodoAMQPPublisher {
+func NewTodoAMQPService(tp *trace_sdk.TracerProvider, channel *amqp.Channel) TodoAMQPPublisher {
 	return &todoAMQPPublisher{
 		tp:      tp,
 		channel: channel,
@@ -36,7 +37,12 @@ func (publisher *todoAMQPPublisher) Create() {
 	// Create a new span (child of the trace id) to inform the publishing of the message
 	tr := publisher.tp.Tracer("amqp")
 	spanName := fmt.Sprintf("AMQP - publish - %s", messageName)
-	ctx, span := tr.Start(ctx, spanName)
+
+	opts := []trace.SpanStartOption{
+		trace.WithSpanKind(trace.SpanKindProducer),
+	}
+
+	ctx, span := tr.Start(ctx, spanName, opts...)
 	defer span.End()
 
 	q, err := publisher.channel.QueueDeclare(messageName, true, false, false, false, nil)
